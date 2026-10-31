@@ -1,5 +1,7 @@
 # Student Hub
 
+Выполнил: Пономарев Вячеслав ТРПО24-4
+
 Полностью готовый локальный запуск состоит из PostgreSQL, Spring Boot API и React-интерфейса.
 
 ## Запуск через Docker Compose

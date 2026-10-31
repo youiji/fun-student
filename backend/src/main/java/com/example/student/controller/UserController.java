@@ -5,6 +5,10 @@ import com.example.student.dto.user.UserResponse;
 import com.example.student.dto.user.UserResponseList;
 import com.example.student.service.UserService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
+import org.springframework.validation.annotation.Validated;
+import com.example.student.dto.OnCreate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +27,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+    public UserResponse updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
         return userService.updateUser(id, userRequest);
     }
 
     @PostMapping("/save")
-    public UserResponse save(@RequestBody UserRequest userRequest) {
+    public UserResponse save(@Validated({Default.class, OnCreate.class}) @RequestBody UserRequest userRequest) {
         return userService.save(userRequest);
     }
 

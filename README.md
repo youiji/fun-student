@@ -9,6 +9,8 @@
 Требуется только установленный Docker Desktop:
 
 ```bash
+cp .env.example .env
+# Измените секреты и пароли в .env
 docker compose up --build
 ```
 
@@ -32,9 +34,12 @@ docker compose down -v
 
 | Email | Пароль | Роль |
 |---|---|---|
-| `superadmin@example.com` | `superAdmin` | `SUPER_ADMIN` |
-| `admin@example.com` | `admin` | `ADMIN` |
-| `teacher@example.com` | `teacher` | `TEACHER` |
+| `superadmin@example.com` | `superadmin` | Суперадминистратор |
+| `admin@example.com` | `admin` | Администратор |
+| `teacher@example.com` | `teacher` | Преподаватель |
+
+Пароли указаны для стандартного `.env`. Для рабочего или публичного окружения
+обязательно замените их в `.env` и измените `JWT_SECRET`.
 
 ## Локальный запуск без Docker
 
@@ -42,6 +47,7 @@ Backend:
 
 ```bash
 cd backend
+set -a; source ../.env; set +a
 ./mvnw spring-boot:run
 ```
 

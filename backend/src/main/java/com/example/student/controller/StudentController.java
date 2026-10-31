@@ -4,6 +4,7 @@ import com.example.student.dto.*;
 import com.example.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,21 +27,15 @@ public class StudentController {
         return studentService.findById(id);
     }
 
-    @GetMapping("info/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
-    public StudentFullResponse getFullInfoById(@PathVariable Long id) {
-        return studentService.findById(id);
-    }
-
     @PostMapping("/save")
     @PreAuthorize("hasRole('ADMIN')")
-    public StudentResponse createStudent(@RequestBody StudentRequest studentRequest) {
+    public StudentResponse createStudent(@Valid @RequestBody StudentRequest studentRequest) {
         return studentService.save(studentRequest);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public StudentResponse updateStudent(@PathVariable Long id, @RequestBody StudentUpdateRequest request) {
+    public StudentResponse updateStudent(@PathVariable Long id, @Valid @RequestBody StudentUpdateRequest request) {
         return studentService.update(id, request);
     }
 

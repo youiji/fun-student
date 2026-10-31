@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Set;
 
@@ -18,12 +19,18 @@ public class AppInitializer {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
+    @Value("${app.seed.superadmin-password}")
+    private String superadminPassword;
+    @Value("${app.seed.admin-password}")
+    private String adminPassword;
+    @Value("${app.seed.teacher-password}")
+    private String teacherPassword;
 
     @PostConstruct
     public void init() {
-        createUserIfNotExists("superadmin@example.com", "superAdmin", Set.of(Role.SUPER_ADMIN));
-        createUserIfNotExists("admin@example.com", "admin", Set.of(Role.ADMIN));
-        createUserIfNotExists("teacher@example.com", "teacher", Set.of(Role.TEACHER));
+        createUserIfNotExists("superadmin@example.com", superadminPassword, Set.of(Role.SUPER_ADMIN));
+        createUserIfNotExists("admin@example.com", adminPassword, Set.of(Role.ADMIN));
+        createUserIfNotExists("teacher@example.com", teacherPassword, Set.of(Role.TEACHER));
         createStudentsIfEmpty();
     }
 
@@ -34,7 +41,6 @@ public class AppInitializer {
             user.setPassword(passwordEncoder.encode(rawPassword));
             user.setRoles(roles);
             userRepository.save(user);
-            System.out.println("Создан пользователь c логином: " + email);
         }
     }
     private void createStudentsIfEmpty() {

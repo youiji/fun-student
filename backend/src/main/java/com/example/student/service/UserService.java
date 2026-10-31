@@ -7,7 +7,6 @@ import com.example.student.model.User;
 
 public interface UserService {
     boolean existsByEmail(String email);
-    boolean register(UserRequest userRequest);
     User findByEmail(String email);
     UserResponseList findAll();
     UserResponse save(UserRequest userRequest);

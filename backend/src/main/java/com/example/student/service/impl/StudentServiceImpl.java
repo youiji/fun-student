@@ -46,9 +46,10 @@ public class StudentServiceImpl implements StudentService {
         return studentMapper.studentToResponse(studentRepository.save(existedStudent));
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
-        studentRepository.deleteById(id);
+        studentRepository.delete(getStudentById(id));
     }
 
     private Student getStudentById(Long id) {

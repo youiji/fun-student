@@ -29,22 +29,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(UserRequest userRequest) {
-        User user = userMapper.toEntity(userRequest);
-        if (user == null || user.getEmail() == null) {
-            return false;
-        }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return false;
-        }
-        if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        userRepository.save(user);
-        return true;
-    }
-
-    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(
@@ -91,8 +75,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(userRepository.save(existedUser));
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
-        userRepository.deleteById(id);
+        User existedUser = userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(MessageFormat.format("User with ID {0} not found!", id)));
+        userRepository.delete(existedUser);
     }
 }

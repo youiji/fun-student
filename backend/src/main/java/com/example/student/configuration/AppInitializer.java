@@ -48,22 +48,27 @@ public class AppInitializer {
             Student s1 = new Student();
             s1.setName("Michail");
             s1.setSurname("Ivanov");
+            s1.setEmail("michail.ivanov@example.com");
 
             Student s2 = new Student();
             s2.setName("Petr");
             s2.setSurname("Semenov");
+            s2.setEmail("petr.semenov@example.com");
 
             Student s3 = new Student();
             s3.setName("Sergey");
             s3.setSurname("Boroda");
+            s3.setEmail("sergey.boroda@example.com");
 
             Student s4 = new Student();
             s4.setName("Ekaterina");
             s4.setSurname("Sidorova");
+            s4.setEmail("ekaterina.sidorova@example.com");
 
             Student s5 = new Student();
             s5.setName("Dmitry");
             s5.setSurname("Alexandrov");
+            s5.setEmail("dmitry.alexandrov@example.com");
 
             studentRepository.save(s1);
             studentRepository.save(s2);

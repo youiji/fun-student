@@ -10,11 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AppInitializer {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -76,7 +78,7 @@ public class AppInitializer {
             studentRepository.save(s4);
             studentRepository.save(s5);
 
-            System.out.println("Созданы тестовые записи студентов.");
+            log.info("Созданы тестовые записи студентов.");
         }
     }
 }

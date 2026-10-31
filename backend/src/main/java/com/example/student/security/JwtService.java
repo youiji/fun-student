@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,14 @@ public class JwtService {
     private final SecretKey secretKey;
 
     public JwtService(@Value("${app.security.jwt-secret}") String jwtSecret) {
-        this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        if (jwtSecret == null || jwtSecret.isBlank()) {
+            throw new IllegalArgumentException("JWT_SECRET must be configured");
+        }
+        byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        if (secretBytes.length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET must contain at least 32 bytes");
+        }
+        this.secretKey = Keys.hmacShaKeyFor(secretBytes);
     }
     public String generateToken(String username, Set<Role> roles) {
         List<String> roleNames = roles.stream()

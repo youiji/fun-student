@@ -27,7 +27,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<AppError>) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?.url?.endsWith('/auth/login')) {
       window.dispatchEvent(new CustomEvent('student-hub:unauthorized'));
     }
     return Promise.reject(error);

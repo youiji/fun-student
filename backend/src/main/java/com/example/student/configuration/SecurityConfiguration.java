@@ -33,7 +33,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -42,11 +42,24 @@ public class SecurityConfiguration {
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
+                                writeError(objectMapper, response, HttpServletResponse.SC_UNAUTHORIZED, "Требуется аутентификация"))
+                        .accessDeniedHandler((request, response, exception) ->
+                                writeError(objectMapper, response, HttpServletResponse.SC_FORBIDDEN, "Недостаточно прав")))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    private static void writeError(ObjectMapper objectMapper, HttpServletResponse response,
+                                   int status, String message) throws java.io.IOException {
+        if (response.isCommitted()) {
+            return;
+        }
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        objectMapper.writeValue(response.getWriter(), new com.example.student.exception.AppError(status, message));
     }
 
     @Bean

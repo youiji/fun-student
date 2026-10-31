@@ -3,7 +3,6 @@ package com.example.student.security;
 import com.example.student.configuration.SecurityConfiguration;
 import com.example.student.controller.StudentController;
 import com.example.student.controller.UserController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.student.dto.StudentResponseList;
 import com.example.student.dto.user.UserResponseList;
 import com.example.student.exception.EntityNotFoundException;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(controllers = {StudentController.class, UserController.class})
 @Import(SecurityConfiguration.class)
@@ -41,9 +42,6 @@ class SecurityAuthorizationIntegrationTest {
 
     @MockitoBean
     private org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
-
-    @MockitoBean
-    private ObjectMapper objectMapper;
 
     @MockitoBean
     private StudentService studentService;
@@ -118,5 +116,47 @@ class SecurityAuthorizationIntegrationTest {
                 .andExpect(status().isNotFound());
 
         verify(studentService).deleteById(999L);
+    }
+
+    @Test
+    void invalidJwtReturnsUnauthorizedJson() throws Exception {
+        when(jwtService.extractUsername("malformed-token"))
+                .thenThrow(new io.jsonwebtoken.MalformedJwtException("malformed"));
+
+        mockMvc.perform(get("/api/v1/student")
+                        .header("Authorization", "Bearer" + " malformed-token"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(401))
+                .andExpect(jsonPath("$.message").value("Недействительный токен"));
+    }
+
+    @Test
+    void jwtForDeletedUserReturnsUnauthorizedJson() throws Exception {
+        when(jwtService.extractUsername("deleted-user-token")).thenReturn("deleted@example.com");
+        when(userDetailsService.loadUserByUsername("deleted@example.com"))
+                .thenThrow(new UsernameNotFoundException("internal database detail"));
+
+        mockMvc.perform(get("/api/v1/student")
+                        .header("Authorization", "Bearer" + " deleted-user-token"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(401))
+                .andExpect(jsonPath("$.message").value("Недействительный токен"));
+    }
+
+    @Test
+    void missingAuthenticationReturnsUnauthorizedJson() throws Exception {
+        mockMvc.perform(get("/api/v1/student"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.statusCode").value(401))
+                .andExpect(jsonPath("$.message").value("Требуется аутентификация"));
+    }
+
+    @Test
+    @WithMockUser(roles = "TEACHER")
+    void forbiddenRequestReturnsForbiddenJson() throws Exception {
+        mockMvc.perform(delete("/api/v1/student/1"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.statusCode").value(403))
+                .andExpect(jsonPath("$.message").value("Недостаточно прав"));
     }
 }

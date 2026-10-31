@@ -15,7 +15,7 @@ api.interceptors.request.use((config) => {
     try {
       const session = JSON.parse(raw) as { token?: string; expiresAt?: number };
       if (session.token && (!session.expiresAt || session.expiresAt > Date.now())) {
-        config.headers.Authorization = `Bearer ${session.token}`;
+        config.headers.Authorization = 'Bearer ' + session.token;
       }
     } catch {
       sessionStorage.removeItem(TOKEN_KEY);

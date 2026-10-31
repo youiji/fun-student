@@ -3,13 +3,16 @@ package com.example.student.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<AppError> catchEntityNotFoundException(EntityNotFoundException e) {
@@ -39,5 +42,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AppError> catchBadCredentials(BadCredentialsException e) {
         return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Неверный email или пароль"),
                 HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<AppError> catchAccessDenied(AccessDeniedException e) {
+        return new ResponseEntity<>(new AppError(HttpStatus.FORBIDDEN.value(), "Недостаточно прав"),
+                HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<AppError> catchUnexpectedException(Exception e) {
+        log.error("Unhandled application error", e);
+        return new ResponseEntity<>(
+                new AppError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Внутренняя ошибка сервера"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

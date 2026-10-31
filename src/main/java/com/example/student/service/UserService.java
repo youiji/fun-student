@@ -11,6 +11,6 @@ public interface UserService {
     User findByEmail(String email);
     UserResponseList findAll();
     UserResponse save(UserRequest userRequest);
-    UserResponse updateUser(UserRequest userRequest);
+    UserResponse updateUser(Long id, UserRequest userRequest);
     void deleteById(Long id);
 }

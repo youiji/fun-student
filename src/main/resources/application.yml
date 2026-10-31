@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   main:
@@ -9,10 +9,10 @@ spring:
   jpa:
     hibernate.ddl-auto: update
   datasource:
-    url: jdbc:postgresql://localhost:5432/students_db
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/students_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     hikari:
-      schema: students_schema
+      schema: ${SPRING_DATASOURCE_SCHEMA:students_schema}
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS students_schema;
-      connection-timeout: 10000
+      connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:10000}

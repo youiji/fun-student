@@ -43,6 +43,16 @@ docker compose down -v
 
 ## Локальный запуск без Docker
 
+Сначала запустите PostgreSQL и создайте файл окружения из шаблона:
+
+```bash
+cp .env.example .env
+```
+
+При необходимости измените параметры подключения к PostgreSQL в `.env`.
+Для локального запуска значения `SPRING_DATASOURCE_*` должны соответствовать
+запущенному PostgreSQL.
+
 Backend:
 
 ```bash

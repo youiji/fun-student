@@ -49,17 +49,15 @@ docker compose down -v
 cp .env.example .env
 ```
 
-При необходимости измените параметры подключения к PostgreSQL в `.env`.
-Для локального запуска значения `SPRING_DATASOURCE_*` должны соответствовать
-запущенному PostgreSQL.
 
 Backend:
 
 ```bash
 cd backend
-set -a; source ../.env; set +a
 ./mvnw spring-boot:run
 ```
+
+
 
 Frontend:
 
@@ -70,3 +68,15 @@ npm run dev
 ```
 
 В этом режиме фронтенд доступен на `http://localhost:5173`, а Vite проксирует `/api` на backend `http://localhost:8080`.
+
+## Тесты и покрытие
+
+Запуск backend-тестов с генерацией JaCoCo-отчёта:
+
+```bash
+cd backend
+./mvnw verify
+```
+
+HTML-отчёт доступен в `backend/target/site/jacoco/index.html`, XML-отчёт —
+в `backend/target/site/jacoco/jacoco.xml`.

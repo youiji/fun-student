@@ -1,5 +1,6 @@
 package com.example.student;
 
+import com.example.student.configuration.DatabaseInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -8,7 +9,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class StudentApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StudentApplication.class, args);
+		SpringApplication application = new SpringApplication(StudentApplication.class);
+		application.addInitializers(new DatabaseInitializer());
+		application.run(args);
 	}
 
 }

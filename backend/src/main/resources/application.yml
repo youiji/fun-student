@@ -20,6 +20,8 @@ spring:
       connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:10000}
 
 app:
+  database:
+    auto-create: ${SPRING_DATASOURCE_AUTO_CREATE_DATABASE:true}
   security:
     jwt-secret: ${JWT_SECRET}
   seed:
